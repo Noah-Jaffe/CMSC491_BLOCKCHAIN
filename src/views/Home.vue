@@ -2,62 +2,78 @@
 types of messages to the api to be sent over the VERDI architecture. -->
 <template>
   <section>
-    <b-field label="First Name">
-      <b-input
-        v-model="firstname"
-        placeholder="First Name"
-        type="text"
-        required
-      >
-      </b-input>
-    </b-field>
-
-    <b-field label="Last Name">
-      <b-input v-model="lastname" placeholder="Last Name" type="text" required>
-      </b-input>
-    </b-field>
-
-    <b-field label="Institution">
-      <b-input
-        v-model="institution"
-        placeholder="Institution"
-        type="text"
-        required
-      >
-      </b-input>
-    </b-field>
-    <b-field label="Degree Level">
-      <b-select
-        placeholder="Select a Degree level"
-        required
-        v-model="degreelevel"
-      >
-        <option value="GED">GED</option>
-        <option value="HS">High School</option>
-        <option value="AS">Associate's</option>
-        <option value="BS">Bachelor's</option>
-        <option value="MS">Master's</option>
-        <option value="DR">Doctoral</option>
-        <option value="PHD">Profesional</option>
-      </b-select>
-    </b-field>
-    <b-field label="Field">
-      <b-input placeholder="Field" type="text" v-model="field"> </b-input>
-    </b-field>
-    <b-field label="Diploma file">
-      <b-upload v-model="file">
-        <a class="button is-primary">
-          <b-icon icon="upload"></b-icon>
-          <span>Click to upload</span>
-        </a>
-      </b-upload>
-      <span class="file-name" v-if="file">
-        {{ file.name }}
-      </span>
-    </b-field>
+    <div>
+      <b-field label="Full Name">
+        <b-input
+          v-model="fullname"
+          placeholder="Full Name"
+          type="text"
+          required
+        >
+        </b-input>
+      </b-field>
+    </div>
+    <div>
+      <b-field label="Institution">
+        <b-input
+          v-model="institution"
+          placeholder="Institution"
+          type="text"
+          required
+        >
+        </b-input>
+      </b-field>
+    </div>
+    <div>
+      <b-field label="Degree Level">
+        <b-select
+          placeholder="Select a Degree level"
+          required
+          v-model="degreelevel"
+        >
+          <option value="GED">GED</option>
+          <option value="HS">High School</option>
+          <option value="AS">Associate's</option>
+          <option value="BS">Bachelor's</option>
+          <option value="MS">Master's</option>
+          <option value="DR">Doctoral</option>
+          <option value="PHD">Profesional</option>
+        </b-select>
+      </b-field>
+    </div>
+    <div>
+      <b-field label="Field">
+        <b-input placeholder="Field" type="text" v-model="field"> </b-input>
+      </b-field>
+    </div>
+    <div>
+      <b-field label="Diploma file">
+        <b-upload v-model="file">
+          <a class="button is-primary">
+            <b-icon icon="upload"></b-icon>
+            <span>Click to upload</span>
+          </a>
+        </b-upload>
+        <span class="file-name" v-if="file">
+          {{ file.name }}
+        </span>
+      </b-field>
+    </div>
     <div class="btn-group">
-      <input type="button" value="Upload" @click="submit_form()" />
-      <input type="button" value="Query" @click="do_query()" />
+      <input
+        class="button"
+        type="button"
+        value="Upload"
+        @click="submit_form()"
+      />
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <input class="button" type="button" value="Query" @click="do_query()" />
+    </div>
+    <div>
+      <p v-if="cors_workaround">if CORS issue, click for link <br /></p>
+      <a :href="cors_workaround" target="_blank">
+        {{ cors_workaround }}
+      </a>
     </div>
   </section>
 </template>
@@ -69,28 +85,26 @@ export default {
   name: "Home",
   data: function() {
     return {
-      firstname: "",
-      lastname: "",
+      fullname: "",
       institution: "",
       degreelevel: "",
       field: "",
       file: null,
-      filecontents: null
+      filecontents: null,
+      cors_workaround: ""
     };
   },
   methods: {
     do_query() {
       if (
-        this.firstname.length == 0 ||
-        this.lastname.length == 0 ||
+        this.fullname.length == 0 ||
         this.institution.length == 0 ||
         this.degreelevel.length == 0
       ) {
         // then dont do query, not enough info!
         this.$buefy.dialog.alert({
           title: "Error",
-          message:
-            "First name, Last Name, Institution, and Degree Level are all required",
+          message: "Full name, Institution, and Degree Level are all required",
           type: "is-danger"
         });
         return null;
@@ -107,54 +121,46 @@ export default {
           return null;
         }
         // otherwise commit to chain
-        /*var endpoint =
+        var endpoint =
           this.$root.$store.state.API_URI +
-          '/abci_query?path="' +
+          '/abci_query?data="' +
           formattedKey +
-          '"&data=&height=&prove=';*/
-        /*axios.get(endpoint).then(response => {
-          this.$buefy.dialog.alert({
-            title: "return value",
-            message: response.data,
-            type: "is-success"
-          });
-        });*/
+          '"&height=&prove=';
+        this.cors_workaround = endpoint;
         axios
-          .post(this.$root.$store.state.API_URI, {
-            method: "broadcast_tx_commit",
-            jsonrpc: "2.0",
-            params: { tx: btoa(formattedKey) },
-            id: ""
-          })
+          .get(endpoint)
           .then(response => {
+            this.$buefy.dialog.alert({
+              title: "return value",
+              message: response.data,
+              type: "is-success"
+            });
             // eslint-disable-next-line no-console
-            console.log(response);
+            console.log(response.data["result"]["response"]["log"]);
           })
           .catch(error => {
             // eslint-disable-next-line no-console
-            console.error("YEEEET", error);
+            console.error(error);
           });
       }
     },
     submit_form() {
       if (
-        this.firstname.length == 0 ||
-        this.lastname.length == 0 ||
+        this.fullname.length == 0 ||
         this.institution.length == 0 ||
         this.degreelevel.length == 0
       ) {
         // then dont upload, not enough info!
         this.$buefy.dialog.alert({
           title: "Error",
-          message:
-            "First name, Last Name, Institution, and Degree Level are all required",
+          message: "Full name, Institution, and Degree Level are all required",
           type: "is-danger"
         });
         return null;
       } else {
         var formattedKey = this.format_key();
-        //var formattedValue = this.format_value();
-        if (formattedKey.search("__") >= 0) {
+        var formattedValue = this.format_value();
+        /*if (formattedKey.search("__") >= 0) {
           this.$buefy.dialog.alert({
             title: "Error",
             message:
@@ -162,56 +168,45 @@ export default {
             type: "is-danger"
           });
           return null;
-        }
+        }*/
         // otherwise commit to chain
-        /*var endpoint =
+        var endpoint =
           this.$root.$store.state.API_URI +
           '/broadcast_tx_commit?tx="' +
           formattedKey +
           "=" +
           formattedValue +
-          '"';*
-        axios.get(endpoint).then(response => {
-          this.$buefy.dialog.alert({
-            title: "return value",
-            message: response.data,
-            type: "is-success"
-          });
-        });
-        */
+          '"';
+        this.cors_workaround = endpoint;
         axios
-          .post(this.$root.$store.state.API_URI, {
-            method: "broadcast_tx_commit",
-            jsonrpc: "2.0",
-            params: { tx: btoa(formattedKey) },
-            id: ""
-          })
+          .get(endpoint)
           .then(response => {
-            // eslint-disable-next-line no-console
-            console.log(response);
+            this.$buefy.dialog.alert({
+              title: "return value",
+              message: response.data,
+              type: "is-success"
+            });
           })
           .catch(error => {
             // eslint-disable-next-line no-console
-            console.error("YEEEET", error);
+            console.error(error);
           });
       }
     },
     format_key() {
       var ret =
-        this.$root.encode_input_string(this.firstname) +
+        this.$root.encode_input_string(this.fullname) +
         "_" +
-        this.$root.encode_input_string(this.lastname) +
+        this.$root.encode_input_string(this.institution) +
         "_" +
-        this.$root.encode_input_string(this.institution);
-      //"_" +
-      //this.degreelevel;
+        this.$root.encode_input_string(this.degreelevel);
       if (this.field.length > 0) {
         ret += "_" + this.$root.encode_input_string(this.field);
       }
       return ret;
     },
     format_value() {
-      var ret = this.$root.encode_input_string(this.degreelevel) + "_";
+      var ret = "true_";
       if (this.file) {
         var reader = new FileReader();
         reader.readAsText(this.file, "UTF-8");
@@ -229,22 +224,6 @@ export default {
         reader.readAsText(this.file);
       }
       return ret;
-    },
-    update_form_fields(key) {
-      var log_action = "response from /v2/fields/";
-
-      this.$root.log("Attempting to get " + log_action + key);
-
-      // attempt to get the form data from the api
-      axios
-        .get(this.$root.$store.state.API_URI + "/v2/fields/" + key)
-        .then(response => {
-          this.$root.log("Received " + log_action + ": " + response.data);
-          this.active_form_items = response.data;
-        })
-        .catch(error => {
-          this.$root.log("Failed " + log_action + ": " + error);
-        });
     }
   }
 };
