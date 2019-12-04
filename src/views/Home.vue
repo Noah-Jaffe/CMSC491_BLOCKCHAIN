@@ -1,5 +1,3 @@
-<!-- This file builds the /produce web page. Allows the user to send different 
-types of messages to the api to be sent over the VERDI architecture. -->
 <template>
   <section>
     <div>
