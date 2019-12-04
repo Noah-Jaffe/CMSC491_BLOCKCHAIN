@@ -143,6 +143,11 @@ export default {
             });
             // eslint-disable-next-line no-console
             console.log(response.data["result"]["response"]["log"]);
+            if (response.data["result"]["response"]["log"] == "exists") {
+              // do buefy notification
+              this.queryresponse = atob(response.data["result"]["response"]["key"]);
+              this.filecontents = atob(response.data["result"]["response"]["value"]);             
+            }
           })
           .catch(error => {
             // eslint-disable-next-line no-console
