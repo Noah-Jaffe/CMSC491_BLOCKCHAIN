@@ -25,7 +25,10 @@ new Vue({
    */
   methods: {
     encode_input_string(str) {
-      return str.trim().replace(/ |_/gi, "-");
+      return str
+        .trim()
+        .replace(/ |_/gi, "-")
+        .toLowerCase();
     }
   }
 }).$mount("#app");

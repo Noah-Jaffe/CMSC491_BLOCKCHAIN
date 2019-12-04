@@ -9,7 +9,5 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     API_URI: "http://localhost:26657"
-    // For integration:
-    //API_URI: "http://mockta4flask-env.us-east-1.elasticbeanstalk.com",
   }
 });

@@ -1,9 +1,5 @@
 <template>
   <div id="app" class="root_container">
-    <div id="nav" class="nav_bar">
-      <router-link to="/query">Query</router-link>|
-      <router-link to="/upload">Upload</router-link>
-    </div>
     <router-view style="padding-bottom: 100px;" />
   </div>
 </template>

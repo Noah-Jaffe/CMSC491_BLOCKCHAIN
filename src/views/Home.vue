@@ -96,7 +96,7 @@ export default {
         return null;
       } else {
         var formattedKey = this.format_key();
-        var formattedValue = this.format_value();
+        //var formattedValue = this.format_value();
         if (formattedKey.search("__") >= 0) {
           this.$buefy.dialog.alert({
             title: "Error",
@@ -107,18 +107,33 @@ export default {
           return null;
         }
         // otherwise commit to chain
-        var endpoint =
+        /*var endpoint =
           this.$root.$store.state.API_URI +
           '/abci_query?path="' +
           formattedKey +
-          '"&data=&height=&prove=';
-        axios.get(endpoint).then(response => {
+          '"&data=&height=&prove=';*/
+        /*axios.get(endpoint).then(response => {
           this.$buefy.dialog.alert({
             title: "return value",
             message: response.data,
             type: "is-success"
           });
-        });
+        });*/
+        axios
+          .post(this.$root.$store.state.API_URI, {
+            method: "broadcast_tx_commit",
+            jsonrpc: "2.0",
+            params: { tx: btoa(formattedKey) },
+            id: ""
+          })
+          .then(response => {
+            // eslint-disable-next-line no-console
+            console.log(response);
+          })
+          .catch(error => {
+            // eslint-disable-next-line no-console
+            console.error("YEEEET", error);
+          });
       }
     },
     submit_form() {
@@ -138,7 +153,7 @@ export default {
         return null;
       } else {
         var formattedKey = this.format_key();
-        var formattedValue = this.format_value();
+        //var formattedValue = this.format_value();
         if (formattedKey.search("__") >= 0) {
           this.$buefy.dialog.alert({
             title: "Error",
@@ -149,13 +164,13 @@ export default {
           return null;
         }
         // otherwise commit to chain
-        var endpoint =
+        /*var endpoint =
           this.$root.$store.state.API_URI +
           '/broadcast_tx_commit?tx="' +
           formattedKey +
           "=" +
           formattedValue +
-          '"';
+          '"';*
         axios.get(endpoint).then(response => {
           this.$buefy.dialog.alert({
             title: "return value",
@@ -163,6 +178,22 @@ export default {
             type: "is-success"
           });
         });
+        */
+        axios
+          .post(this.$root.$store.state.API_URI, {
+            method: "broadcast_tx_commit",
+            jsonrpc: "2.0",
+            params: { tx: btoa(formattedKey) },
+            id: ""
+          })
+          .then(response => {
+            // eslint-disable-next-line no-console
+            console.log(response);
+          })
+          .catch(error => {
+            // eslint-disable-next-line no-console
+            console.error("YEEEET", error);
+          });
       }
     },
     format_key() {
