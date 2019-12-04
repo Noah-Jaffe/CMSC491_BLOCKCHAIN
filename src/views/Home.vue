@@ -57,6 +57,12 @@ types of messages to the api to be sent over the VERDI architecture. -->
         <span class="file-name" v-if="file">
           {{ file.name }}
         </span>
+        <b-input
+          placeholder="demo_fake_deploma_signature"
+          type="text"
+          v-model="filecontents"
+        >
+        </b-input>
       </b-field>
     </div>
     <div class="btn-group">
@@ -79,7 +85,7 @@ types of messages to the api to be sent over the VERDI architecture. -->
 </template>
 
 <script>
-import axios from "axios";
+//import axios from "axios";
 
 export default {
   name: "Home",
@@ -127,7 +133,7 @@ export default {
           formattedKey +
           '"&height=&prove=';
         this.cors_workaround = endpoint;
-        axios
+        /*axios
           .get(endpoint)
           .then(response => {
             this.$buefy.dialog.alert({
@@ -141,7 +147,7 @@ export default {
           .catch(error => {
             // eslint-disable-next-line no-console
             console.error(error);
-          });
+          });*/
       }
     },
     submit_form() {
@@ -178,7 +184,7 @@ export default {
           formattedValue +
           '"';
         this.cors_workaround = endpoint;
-        axios
+        /*axios
           .get(endpoint)
           .then(response => {
             this.$buefy.dialog.alert({
@@ -190,7 +196,7 @@ export default {
           .catch(error => {
             // eslint-disable-next-line no-console
             console.error(error);
-          });
+          });*/
       }
     },
     format_key() {
@@ -206,12 +212,13 @@ export default {
       return ret;
     },
     format_value() {
-      var ret = "true_";
+      var ret =
+        this.filecontents.length > 0 ? this.filecontents : "some-placeholder_";
       if (this.file) {
         var reader = new FileReader();
         reader.readAsText(this.file, "UTF-8");
         reader.onload = function(evt) {
-          ret = evt.target.result;
+          this.filecontents = evt.target.result;
         };
         reader.onerror = function(evt) {
           this.$buefy.dialog.alert({
