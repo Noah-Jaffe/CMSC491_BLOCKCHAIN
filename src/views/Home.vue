@@ -84,7 +84,7 @@
 
 <script>
 //import axios from "axios";
-import request from "postman-request";
+import exec from "shelljs";
 
 export default {
   name: "Home",
@@ -132,13 +132,11 @@ export default {
           formattedKey +
           '"&height=&prove=';
         this.cors_workaround = endpoint;
-        const request = new Request(endpoint, { mode: "no-cors" });
-        request.get(endpoint).on("response", function(response) {
-          console.log(response.statusCode); // 200
-          console.log(response.headers["content-type"]); // 'image/png'
-          console.log(response)
+        exec("curl " + endpoint, function(code, stdout, stderr) {
+          console.log("Exit code:", code);
+          console.log("Program output:", stdout);
+          console.log("Program stderr:", stderr);
         });
-        fetch(request).then(response => console.log(response));
         /*axios
           .get(endpoint)
           .then(response => {
