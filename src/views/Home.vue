@@ -84,6 +84,7 @@
 
 <script>
 //import axios from "axios";
+import request from "postman-request";
 
 export default {
   name: "Home",
@@ -131,6 +132,8 @@ export default {
           formattedKey +
           '"&height=&prove=';
         this.cors_workaround = endpoint;
+        const request = new Request(endpoint, {mode: 'no-cors'});
+        fetch(request).then(response => console.log(response));
         /*axios
           .get(endpoint)
           .then(response => {
