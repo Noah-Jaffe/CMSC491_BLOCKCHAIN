@@ -132,7 +132,12 @@ export default {
           formattedKey +
           '"&height=&prove=';
         this.cors_workaround = endpoint;
-        const request = new Request(endpoint, {mode: 'no-cors'});
+        const request = new Request(endpoint, { mode: "no-cors" });
+        request.get(endpoint).on("response", function(response) {
+          console.log(response.statusCode); // 200
+          console.log(response.headers["content-type"]); // 'image/png'
+          console.log(response)
+        });
         fetch(request).then(response => console.log(response));
         /*axios
           .get(endpoint)
