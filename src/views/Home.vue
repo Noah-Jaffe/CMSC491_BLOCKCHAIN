@@ -55,7 +55,7 @@
       <object
         v-if="filecontents"
         :data="filecontents"
-        height="55%"
+        height="25%"
         width="50%"
       />
     </div>
@@ -255,10 +255,63 @@ export default {
       var ret = null;
       if (this.filecontents) {
         ret =
-          this.filecontents.length > 0 ? this.filecontents : "some-placeholder";
+          this.filecontents.length > 0
+            ? this.filecontents
+            : "some-placeholder_";
+      }
+
+      if (this.file) {
+        var reader = new FileReader();
+        reader.readAsText(this.file, "UTF-8");
+        reader.onload = function(evt) {
+          this.filecontents = evt.target.result;
+        };
+        reader.onerror = function(evt) {
+          this.$buefy.dialog.alert({
+            title: "Error",
+            message: evt.target,
+            type: "is-danger"
+          });
+          ret = "error reading file";
+        };
+        reader.readAsText(this.file);
       }
       return ret;
     }
   }
 };
 </script>
+
+<style>
+.upload_container {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  height: 90%;
+  width: 100%;
+}
+.btn-group button {
+  background-color: #4caf50; /* Green background */
+  border: 1px solid green; /* Green border */
+  color: white; /* White text */
+  padding: 10px 24px; /* Some padding */
+  cursor: pointer; /* Pointer/hand icon */
+  float: left; /* Float the buttons side by side */
+}
+
+.btn-group button:not(:last-child) {
+  border-right: none; /* Prevent double borders */
+}
+
+/* Clear floats (clearfix hack) */
+.btn-group:after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+/* Add a background color on hover */
+.btn-group button:hover {
+  background-color: #3e8e41;
+}
+</style>
