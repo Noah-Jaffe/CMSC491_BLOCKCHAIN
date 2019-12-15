@@ -46,22 +46,18 @@
     </div>
     <div>
       <b-field label="Diploma file">
-        <b-upload v-model="file">
-          <a class="button is-primary">
-            <b-icon icon="upload"></b-icon>
-            <span>Click to upload</span>
-          </a>
-        </b-upload>
-        <span class="file-name" v-if="file">
-          {{ file.name }}
-        </span>
-        <b-input
-          placeholder="demo_fake_deploma_signature"
-          type="text"
-          v-model="filecontents"
-        >
-        </b-input>
+        <input
+          type="file"
+          @change="read_file_contents"
+          accept="image/*,application/pdf"
+        />
       </b-field>
+      <object
+        v-if="filecontents"
+        :data="filecontents"
+        height="25%"
+        width="50%"
+      />
     </div>
     <div class="btn-group">
       <input
@@ -83,8 +79,7 @@
 </template>
 
 <script>
-//import axios from "axios";
-import exec from "shelljs";
+import axios from "axios";
 
 export default {
   name: "Home",
@@ -100,6 +95,42 @@ export default {
     };
   },
   methods: {
+    read_file_contents(event) {
+      // Reference to the DOM input element
+      var input = event.target;
+      // Ensure that you have a file before attempting to read it
+      if (input.files && input.files[0]) {
+        // create a new FileReader to read this image and convert to base64 format
+        var reader = new FileReader();
+        // Define a callback function to run, when FileReader finishes its job
+        reader.onload = e => {
+          // Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
+          // Read image as base64 and set to imageData
+          this.filecontents = e.target.result;
+        };
+        // Start the reader job - read file as a data url (base64 format)
+        reader.readAsDataURL(input.files[0]);
+      }
+    },
+    compress_input_file(data) {
+      return data
+        .split("")
+        .reduce((o, c) => {
+          if (o[o.length - 2] === c && o[o.length - 1] < 35) o[o.length - 1]++;
+          else o.push(c, 0);
+          return o;
+        }, [])
+        .map(_ => (typeof _ === "number" ? _.toString(36) : _))
+        .join("");
+    },
+    decompress_input_file(data) {
+      return data
+        .split("")
+        .map((c, i, a) =>
+          i % 2 ? undefined : new Array(2 + parseInt(a[i + 1], 36)).join(c)
+        )
+        .join("");
+    },
     do_query() {
       if (
         this.fullname.length == 0 ||
@@ -132,12 +163,7 @@ export default {
           formattedKey +
           '"&height=&prove=';
         this.cors_workaround = endpoint;
-        exec("curl " + endpoint, function(code, stdout, stderr) {
-          console.log("Exit code:", code);
-          console.log("Program output:", stdout);
-          console.log("Program stderr:", stderr);
-        });
-        /*axios
+        axios
           .get(endpoint)
           .then(response => {
             this.$buefy.dialog.alert({
@@ -149,21 +175,26 @@ export default {
             console.log(response.data["result"]["response"]["log"]);
             if (response.data["result"]["response"]["log"] == "exists") {
               // do buefy notification
-              this.queryresponse = atob(response.data["result"]["response"]["key"]);
-              this.filecontents = atob(response.data["result"]["response"]["value"]);             
+              this.queryresponse = atob(
+                response.data["result"]["response"]["key"]
+              );
+              this.filecontents = atob(
+                response.data["result"]["response"]["value"]
+              );
             }
           })
           .catch(error => {
             // eslint-disable-next-line no-console
             console.error(error);
-          });*/
+          });
       }
     },
     submit_form() {
       if (
         this.fullname.length == 0 ||
         this.institution.length == 0 ||
-        this.degreelevel.length == 0
+        this.degreelevel.length == 0 ||
+        this.filecontents == null
       ) {
         // then dont upload, not enough info!
         this.$buefy.dialog.alert({
@@ -175,7 +206,7 @@ export default {
       } else {
         var formattedKey = this.format_key();
         var formattedValue = this.format_value();
-        /*if (formattedKey.search("__") >= 0) {
+        if (formattedKey.search("__") >= 0) {
           this.$buefy.dialog.alert({
             title: "Error",
             message:
@@ -183,7 +214,7 @@ export default {
             type: "is-danger"
           });
           return null;
-        }*/
+        }
         // otherwise commit to chain
         var endpoint =
           this.$root.$store.state.API_URI +
@@ -193,7 +224,7 @@ export default {
           formattedValue +
           '"';
         this.cors_workaround = endpoint;
-        /*axios
+        axios
           .get(endpoint)
           .then(response => {
             this.$buefy.dialog.alert({
@@ -205,7 +236,7 @@ export default {
           .catch(error => {
             // eslint-disable-next-line no-console
             console.error(error);
-          });*/
+          });
       }
     },
     format_key() {
@@ -221,8 +252,14 @@ export default {
       return ret;
     },
     format_value() {
-      var ret =
-        this.filecontents.length > 0 ? this.filecontents : "some-placeholder_";
+      var ret = null;
+      if (this.filecontents) {
+        ret =
+          this.filecontents.length > 0
+            ? this.filecontents
+            : "some-placeholder_";
+      }
+
       if (this.file) {
         var reader = new FileReader();
         reader.readAsText(this.file, "UTF-8");
