@@ -5,17 +5,17 @@ To run the front end on a linux machine you will need [`npm`](https://www.npmjs.
 
 Once npm is installed run the following commands from the root directory of the cloned project. 
 
-  `npm install`
+    `npm install`
   
-  `npm run serve`
+    `npm run serve`
   
 Run the standard tendermint example blockchain `kvstore` or `persistantkvstore`. 
 
-  tendermint init
+    tendermint init
   
-  tendermint node --proxy_app=kvstore
+    tendermint node --proxy_app=kvstore
   
-  or
+    or
   
-  tendermint node --proxy_app=persistantkvstore
+    tendermint node --proxy_app=persistantkvstore
   
