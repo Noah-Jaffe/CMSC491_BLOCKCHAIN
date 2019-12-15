@@ -1,0 +1,42 @@
+{
+  "jsonrpc": "2.0",
+  "id": -1,
+  "result": {
+    "check_tx": {
+      "code": 0,
+      "data": null,
+      "log": "",
+      "info": "",
+      "gasWanted": "1",
+      "gasUsed": "0",
+      "events": [],
+      "codespace": ""
+    },
+    "deliver_tx": {
+      "code": 0,
+      "data": null,
+      "log": "",
+      "info": "",
+      "gasWanted": "0",
+      "gasUsed": "0",
+      "events": [
+        {
+          "type": "app",
+          "attributes": [
+            {
+              "key": "Y3JlYXRvcg==",
+              "value": "Q29zbW9zaGkgTmV0b3dva28="
+            },
+            {
+              "key": "a2V5",
+              "value": "Y2hhcmxlcy1kJ2RvbnRlLWJhdGNoX3JvYmVydC1tb3JyaXMtdW5pdmVyc2l0eV9tc19vcmdpbml6YXRpb25hbC1sZWFkZXJzaGlw"
+            }
+          ]
+        }
+      ],
+      "codespace": ""
+    },
+    "hash": "70CC441C8390DA063462075AF8DC527A5CFDC2413E54075CD3588CE291FB43E3",
+    "height": "102698"
+  }
+}
