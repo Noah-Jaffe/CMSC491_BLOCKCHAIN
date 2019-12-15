@@ -89,6 +89,7 @@
           height="100%"
           width="100%"
         />
+        <iframe :src="this.cors_workaround"> </iframe>
       </b-field>
     </div>
   </div>
