@@ -27,7 +27,7 @@ new Vue({
     encode_input_string(str) {
       return str
         .trim()
-        .replace(/ |_/gi, "-")
+        .replace(/ |_|,|;/gi, "-")
         .toLowerCase();
     }
   }
