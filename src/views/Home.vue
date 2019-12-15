@@ -1,81 +1,97 @@
 <template>
-  <section>
-    <div>
-      <b-field label="Full Name">
-        <b-input
-          v-model="fullname"
-          placeholder="Full Name"
-          type="text"
-          required
-        >
-        </b-input>
-      </b-field>
+  <div class="columns">
+    <div class="column is-one-third">
+      <section>
+        <div>
+          <b-field label="Full Name">
+            <b-input
+              v-model="fullname"
+              placeholder="Full Name"
+              type="text"
+              required
+            >
+            </b-input>
+          </b-field>
+        </div>
+        <div>
+          <b-field label="Institution">
+            <b-input
+              v-model="institution"
+              placeholder="Institution"
+              type="text"
+              required
+            >
+            </b-input>
+          </b-field>
+        </div>
+        <div>
+          <b-field label="Degree Level">
+            <b-select
+              placeholder="Select a Degree level"
+              required
+              v-model="degreelevel"
+            >
+              <option value="GED">GED</option>
+              <option value="HS">High School</option>
+              <option value="AS">Associate's</option>
+              <option value="BS">Bachelor's</option>
+              <option value="MS">Master's</option>
+              <option value="DR">Doctoral</option>
+              <option value="PHD">Profesional</option>
+            </b-select>
+          </b-field>
+        </div>
+        <div>
+          <b-field label="Field">
+            <b-input placeholder="Field" type="text" v-model="field"> </b-input>
+          </b-field>
+        </div>
+        <div>
+          <b-field label="Diploma file">
+            <input
+              type="file"
+              @change="read_file_contents"
+              accept="image/*,application/pdf"
+            />
+          </b-field>
+        </div>
+        <div class="btn-group">
+          <input
+            class="button"
+            type="button"
+            value="Upload"
+            @click="submit_form()"
+          />
+          <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          <input
+            class="button"
+            type="button"
+            value="Query"
+            @click="do_query()"
+          />
+        </div>
+        <div>
+          <p v-if="cors_workaround">if CORS issue, click for link <br /></p>
+          <a :href="cors_workaround" target="_blank">
+            {{ cors_workaround }}
+          </a>
+        </div>
+      </section>
     </div>
-    <div>
-      <b-field label="Institution">
-        <b-input
-          v-model="institution"
-          placeholder="Institution"
-          type="text"
-          required
-        >
-        </b-input>
-      </b-field>
-    </div>
-    <div>
-      <b-field label="Degree Level">
-        <b-select
-          placeholder="Select a Degree level"
-          required
-          v-model="degreelevel"
-        >
-          <option value="GED">GED</option>
-          <option value="HS">High School</option>
-          <option value="AS">Associate's</option>
-          <option value="BS">Bachelor's</option>
-          <option value="MS">Master's</option>
-          <option value="DR">Doctoral</option>
-          <option value="PHD">Profesional</option>
-        </b-select>
-      </b-field>
-    </div>
-    <div>
-      <b-field label="Field">
-        <b-input placeholder="Field" type="text" v-model="field"> </b-input>
-      </b-field>
-    </div>
-    <div>
-      <b-field label="Diploma file">
-        <input
-          type="file"
-          @change="read_file_contents"
-          accept="image/*,application/pdf"
+    <div class="column is-two-thirds">
+      <b-field label="Diploma preview">
+        <span v-if="!filecontents">
+          Upload a file to preview it here.
+        </span>
+        <object
+          v-if="filecontents"
+          :data="filecontents"
+          height="100%"
+          width="100%"
         />
       </b-field>
-      <object
-        v-if="filecontents"
-        :data="filecontents"
-        height="55%"
-        width="50%"
-      />
     </div>
-    <div class="btn-group">
-      <input
-        class="button"
-        type="button"
-        value="Upload"
-        @click="submit_form()"
-      />
-      <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-      <input class="button" type="button" value="Query" @click="do_query()" />
-    </div>
-    <div>
-      <p v-if="cors_workaround">if CORS issue, click for link <br /></p>
-      <a :href="cors_workaround" target="_blank">
-        {{ cors_workaround }}
-      </a>
-    </div>
-  </section>
+  </div>
 </template>
 
 <script>
@@ -96,6 +112,7 @@ export default {
   },
   methods: {
     read_file_contents(event) {
+      // this function was copied from online c:
       // Reference to the DOM input element
       var input = event.target;
       // Ensure that you have a file before attempting to read it
@@ -255,7 +272,9 @@ export default {
       var ret = null;
       if (this.filecontents) {
         ret =
-          this.filecontents.length > 0 ? this.filecontents : "some-placeholder";
+          this.filecontents.length > 0
+            ? this.filecontents.replace(";", ":")
+            : "some-placeholder";
       }
       return ret;
     }
