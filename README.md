@@ -10,7 +10,7 @@ Once npm is installed run the following commands from the root directory of the 
     npm run serve
   
 ### Running the back end tendermint blockchain
-1. Enable indexing in the config. Set 
+1. Enable indexing in the tendermint config. 
     
         index_all_tags = true
 
